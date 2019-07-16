@@ -73,6 +73,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
   }
 
   private attachShadow = (root: Element) => {
+    if (!root) return;
     const shadowRoot: any = root.attachShadow
       ? root.attachShadow({ mode: "open" })
       : root;
