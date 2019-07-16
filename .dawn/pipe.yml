@@ -1,0 +1,30 @@
+init:
+  - name: pkginfo
+
+dev:
+  - name: clean
+  - name: typescript
+  - name: webpack
+    common:
+      disabled: true
+    watch: true
+    entry: ./src/example/*.tsx
+    template: ./src/example/*.html
+  - name: server
+  - name: browser-sync
+
+build:
+  - name: clean
+  - name: shell
+    script:
+      - tsc
+      
+test:
+  - name: tslint
+
+publish:
+  - name: shell
+    script:
+      - dn test
+      - dn build
+      - npm pu --registry=http://registry.npmjs.org
