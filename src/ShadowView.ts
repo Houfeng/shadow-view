@@ -40,16 +40,6 @@ export interface IShadowViewProps {
    * 显示延时
    */
   showDelay?: number;
-
-  /**
-   * 在显示时
-   */
-  onShow?: Function;
-
-  /**
-   * 其他属性
-   */
-  [name: string]: any;
 }
 
 /**
@@ -109,15 +99,13 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * @param visibility 对应的 css 的值
    */
   private showRoot(root: HTMLElement, visibility: string): void {
-    const { showDelay, onShow } = this.props;
+    const { showDelay } = this.props;
     if (showDelay) {
       setTimeout(() => {
         root.style.visibility = visibility;
-        if (onShow) onShow();
       }, showDelay);
     } else {
       root.style.visibility = visibility;
-      if (onShow) onShow();
     }
   }
 
