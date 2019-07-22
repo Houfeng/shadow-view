@@ -7,7 +7,7 @@ const css = "https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css";
 export class App extends React.Component {
   state = { message: "", css: "" };
   setMessage = () => {
-    const message = "This is a warning alert—check it out!";
+    const message = "time: " + Date.now();
     this.setState({ message, css });
   };
   render() {
@@ -17,16 +17,14 @@ export class App extends React.Component {
         <button className="btn btn-primary" onClick={this.setMessage}>
           显示
         </button>
-        {message ? (
-          <ShadowView scoped={{ imports: [css] }}>
-            <div className="alert alert-warning" role="alert">
-              {message}
-            </div>
-            <button className="btn btn-primary" onClick={this.setMessage}>
-              测试
-            </button>
-          </ShadowView>
-        ) : null}
+        <ShadowView key={css} scoped={{ imports: [css] }} showDelay={100}>
+          <div className="alert alert-warning" role="alert">
+            {message}
+          </div>
+          <button className="btn btn-primary" onClick={this.setMessage}>
+            测试
+          </button>
+        </ShadowView>
       </div>
     );
   }

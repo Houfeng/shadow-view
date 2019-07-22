@@ -1,4 +1,5 @@
 import * as React from "react";
+const retargetEvents = require("react-shadow-dom-retarget-events");
 
 /**
  * 针对容器作用域的一些设定
@@ -34,6 +35,21 @@ export interface IShadowViewProps {
    * 针对容器作用域的一些设定
    */
   scoped?: IScoped;
+
+  /**
+   * 显示延时
+   */
+  showDelay?: number;
+
+  /**
+   * 在显示时
+   */
+  onShow?: Function;
+
+  /**
+   * 其他属性
+   */
+  [name: string]: any;
 }
 
 /**
@@ -59,7 +75,8 @@ export class ShadowView extends React.Component<IShadowViewProps> {
     imports.forEach(url => buffer.unshift(`@import url("${url}")`));
     const tag = "style";
     const key = tag;
-    return React.createElement(tag, { key }, buffer.join(";"));
+    const scoped = true;
+    return React.createElement(tag, { key, scoped }, buffer.join(";"));
   }
 
   /**
@@ -72,6 +89,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
     [].slice.call(root.children).forEach((child: HTMLElement) => {
       shadowRoot.appendChild(child);
     });
+    retargetEvents(shadowRoot);
     this.checkStyleState(root, originVisibility);
   };
 
@@ -91,7 +109,16 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * @param visibility 对应的 css 的值
    */
   private showRoot(root: HTMLElement, visibility: string): void {
-    root.style.visibility = visibility;
+    const { showDelay, onShow } = this.props;
+    if (showDelay) {
+      setTimeout(() => {
+        root.style.visibility = visibility;
+        if (onShow) onShow();
+      }, showDelay);
+    } else {
+      root.style.visibility = visibility;
+      if (onShow) onShow();
+    }
   }
 
   /**
@@ -104,9 +131,11 @@ export class ShadowView extends React.Component<IShadowViewProps> {
     if (!style) return this.showRoot(root, visibility);
     const rules = [].slice.call(style.rules || style.cssRules || []);
     if (rules.length < 1) return this.showRoot(root, visibility);
-    if (rules.some((rule: any) => !rule.styleSheet && !rule.style)) {
-      return setTimeout(() => this.checkStyleState(root, visibility), 16);
-    }
-    return this.showRoot(root, visibility);
+    const pending = rules.some((rule: any) => {
+      return !(rule.styleSheet || rule.href === "") && !rule.style;
+    });
+    return pending
+      ? setTimeout(() => this.checkStyleState(root, visibility), 16)
+      : this.showRoot(root, visibility);
   }
 }
