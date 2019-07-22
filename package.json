@@ -1,6 +1,6 @@
 {
   "name": "shadow-view",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -17,8 +17,8 @@
     "@types/node": "^12.6.3",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.4",
-    "react": ">=15.6.1",
-    "react-dom": ">=15.6.1"
+    "react": "^15.6.2",
+    "react-dom": "^15.6.2"
   },
   "devDependencies": {
     "dn-middleware-browser-sync": "^0.1.0",

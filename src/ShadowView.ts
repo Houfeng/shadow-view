@@ -1,6 +1,4 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { isArray } from "util";
 
 /**
  * 针对容器作用域的一些设定
@@ -25,13 +23,7 @@ export interface IShadowViewProps {
    * 根元素的 tagName
    * 默认为 `shadow-view`
    */
-  rootTag?: string;
-
-  /**
-   * 内容包裹元素的 tagName（存在的意义为了兼容 React 15.x 及之前的版本）
-   * 默认为 `shadow-content`
-   */
-  contentTag?: string;
+  tagName?: string;
 
   /**
    * Shadow 容器中的子元素
@@ -48,41 +40,73 @@ export interface IShadowViewProps {
  * ShadowView 创建一个启用了 Shadow DOM 的容器
  */
 export class ShadowView extends React.Component<IShadowViewProps> {
+  /**
+   * 渲染组件内容
+   */
   public render() {
-    const { rootTag = "shadow-view" } = this.props;
-    return React.createElement(rootTag, { ref: this.attachShadow });
+    const { tagName = "shadow-view", children } = this.props;
+    const styleElement = this.renderStyle();
+    const props = { ref: this.attachShadow };
+    return React.createElement(tagName, props, styleElement, children);
   }
 
+  /**
+   * 渲染局部作用域的样式
+   */
   private renderStyle() {
-    const { scoped } = this.props;
-    if (!scoped) return;
-    const { style = "", imports = [] } = scoped;
+    const { style = "", imports = [] } = this.props.scoped || {};
     const buffer = style ? [style] : [];
     imports.forEach(url => buffer.unshift(`@import url("${url}")`));
-    if (buffer.length < 1) return;
     const tag = "style";
     const key = tag;
     return React.createElement(tag, { key }, buffer.join(";"));
   }
 
-  private convertChildren(children: React.ReactNode) {
-    const elements = [].slice.call(isArray(children) ? children : [children]);
-    const style = this.renderStyle();
-    if (style) elements.unshift(style);
-    return elements;
+  /**
+   * 启用 Shadow DOM
+   */
+  private attachShadow = (root: HTMLElement) => {
+    if (!root || !root.attachShadow) return;
+    const originVisibility = this.hideRoot(root);
+    const shadowRoot: ShadowRoot = root.attachShadow({ mode: "open" });
+    [].slice.call(root.children).forEach((child: HTMLElement) => {
+      shadowRoot.appendChild(child);
+    });
+    this.checkStyleState(root, originVisibility);
+  };
+
+  /**
+   * 隐藏根元素
+   * @param root 根元素
+   */
+  private hideRoot(root: HTMLElement): string {
+    const originVisibility = root.style.visibility;
+    root.style.visibility = "hidden";
+    return originVisibility;
   }
 
-  private attachShadow = (root: Element) => {
-    if (!root) return;
-    const shadowRoot: any = root.attachShadow
-      ? root.attachShadow({ mode: "open" })
-      : root;
-    const { children, contentTag = "shadow-content" } = this.props;
-    const content: any = React.createElement(
-      contentTag,
-      null,
-      ...this.convertChildren(children)
-    );
-    ReactDOM.render(content, shadowRoot);
-  };
+  /**
+   * 显示根元素
+   * @param root 根元素
+   * @param visibility 对应的 css 的值
+   */
+  private showRoot(root: HTMLElement, visibility: string): void {
+    root.style.visibility = visibility;
+  }
+
+  /**
+   * 检查样式加载状态
+   * @param root 根元素
+   * @param visibility 对应的 css 的值
+   */
+  private checkStyleState(root: HTMLElement, visibility: string): any {
+    const style = root.shadowRoot.styleSheets[0] as any;
+    if (!style) return this.showRoot(root, visibility);
+    const rules = [].slice.call(style.rules || style.cssRules || []);
+    if (rules.length < 1) return this.showRoot(root, visibility);
+    if (rules.some((rule: any) => !rule.styleSheet && !rule.style)) {
+      return setTimeout(() => this.checkStyleState(root, visibility), 16);
+    }
+    return this.showRoot(root, visibility);
+  }
 }
