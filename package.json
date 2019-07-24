@@ -1,6 +1,6 @@
 {
   "name": "shadow-view",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { bridgeShadowRoot } from "./EventBridge";
+import { attachShadow, supportShadow } from "./ShadowRoot";
 
 /**
  * 针对容器作用域的一些设定
@@ -50,6 +50,11 @@ export interface IShadowViewProps {
  */
 export class ShadowView extends React.Component<IShadowViewProps> {
   /**
+   * ShadowRoot
+   */
+  public shadowRoot: ShadowRoot;
+
+  /**
    * 渲染组件内容
    */
   public render() {
@@ -76,14 +81,13 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * 启用 Shadow DOM
    */
   private attachShadow = (root: HTMLElement) => {
-    if (!root || !root.attachShadow) return;
+    if (!root || !supportShadow) return;
     const originVisibility = this.hideRoot(root);
     const { mode = "open", delegatesFocus } = this.props;
-    const shadowRoot: ShadowRoot = root.attachShadow({ mode, delegatesFocus });
+    this.shadowRoot = attachShadow(root, { mode, delegatesFocus });
     [].slice.call(root.children).forEach((child: HTMLElement) => {
-      shadowRoot.appendChild(child);
+      this.shadowRoot.appendChild(child);
     });
-    bridgeShadowRoot(shadowRoot);
     this.checkStyleState(root, originVisibility);
   };
 
