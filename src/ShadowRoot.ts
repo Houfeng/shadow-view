@@ -1,6 +1,17 @@
 import { bridgeShadowRoot } from "./EventBridge";
 import { IShadowRootOptions } from "./IShadowRootOptions";
 
+(() => {
+  const { removeChild } = Node.prototype;
+  Node.prototype.removeChild = function(child) {
+    try {
+      return removeChild.call(this, child);
+    } catch (err) {
+      return removeChild.call(child.parentNode, child);
+    }
+  };
+})();
+
 export const supportShadow = "attachShadow" in document.createElement("div");
 
 export function attachShadow(host: Element, optinos: IShadowRootOptions) {
