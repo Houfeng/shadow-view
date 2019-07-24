@@ -1,49 +1,6 @@
 import * as React from "react";
 import { attachShadow, supportShadow } from "./ShadowRoot";
-
-/**
- * 针对容器作用域的一些设定
- */
-export interface IScoped {
-  /**
-   * 作用于容器内的内联样式
-   */
-  style?: string;
-
-  /**
-   * 作用于容器内的外部样式表
-   */
-  imports?: string[];
-}
-
-/**
- * ShadowView 属性
- */
-export interface IShadowViewProps {
-  /**
-   * 根元素的 tagName
-   * 默认为 `shadow-view`
-   */
-  tagName?: string;
-
-  /**
-   * Shadow 容器中的子元素
-   */
-  children?: React.ReactNode;
-
-  /**
-   * 针对容器作用域的一些设定
-   */
-  scoped?: IScoped;
-
-  /**
-   * 显示延时
-   */
-  showDelay?: number;
-
-  delegatesFocus?: boolean;
-  mode?: ShadowRootMode;
-}
+import { IShadowViewProps } from "./IShadowViewProps";
 
 /**
  * ShadowView 创建一个启用了 Shadow DOM 的容器

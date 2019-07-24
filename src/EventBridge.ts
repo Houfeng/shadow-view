@@ -1,7 +1,7 @@
 import { BRIDGE_EVENT_NAMES } from "./EventNames";
 
 export function bridge(fromNode: Node, toNode: Node) {
-  if (!fromNode || !toNode) return;
+  if (!fromNode || !toNode || fromNode === toNode) return;
   const define = Object.defineProperty;
   BRIDGE_EVENT_NAMES.forEach(eventName => {
     fromNode.addEventListener(eventName, (fromEvent: any) => {
