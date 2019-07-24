@@ -40,7 +40,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
   private attachShadow = (root: HTMLElement) => {
     if (!root || !supportShadow) return;
     const originVisibility = this.hideRoot(root);
-    const { mode = "open", delegatesFocus = true } = this.props;
+    const { mode = "open", delegatesFocus } = this.props;
     this.shadowRoot = attachShadow(root, { mode, delegatesFocus });
     [].slice.call(root.children).forEach((child: HTMLElement) => {
       this.shadowRoot.appendChild(child);
