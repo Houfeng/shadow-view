@@ -1,5 +1,5 @@
 import * as React from "react";
-const retargetEvents = require("react-shadow-dom-retarget-events");
+import { bridgeShadowRoot } from "./EventBridge";
 
 /**
  * 针对容器作用域的一些设定
@@ -40,6 +40,9 @@ export interface IShadowViewProps {
    * 显示延时
    */
   showDelay?: number;
+
+  delegatesFocus?: boolean;
+  mode?: ShadowRootMode;
 }
 
 /**
@@ -75,11 +78,12 @@ export class ShadowView extends React.Component<IShadowViewProps> {
   private attachShadow = (root: HTMLElement) => {
     if (!root || !root.attachShadow) return;
     const originVisibility = this.hideRoot(root);
-    const shadowRoot: ShadowRoot = root.attachShadow({ mode: "open" });
+    const { mode = "open", delegatesFocus } = this.props;
+    const shadowRoot: ShadowRoot = root.attachShadow({ mode, delegatesFocus });
     [].slice.call(root.children).forEach((child: HTMLElement) => {
       shadowRoot.appendChild(child);
     });
-    retargetEvents(shadowRoot);
+    bridgeShadowRoot(shadowRoot);
     this.checkStyleState(root, originVisibility);
   };
 

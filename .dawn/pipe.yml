@@ -11,6 +11,7 @@ dev:
     entry: ./src/example/*.tsx
     template: ./src/example/*.html
   - name: server
+    port: 5007
   - name: browser-sync
 
 build:
