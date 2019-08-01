@@ -1,24 +1,28 @@
 import { bridgeShadowRoot } from "./EventBridge";
 import { IShadowRootOptions } from "./IShadowRootOptions";
-
-(() => {
-  const { removeChild } = Node.prototype;
-  Node.prototype.removeChild = function(child) {
-    try {
-      return removeChild.call(this, child);
-    } catch (err) {
-      return removeChild.call(child.parentNode, child);
-    }
-  };
-})();
+import "./Hooks";
 
 export const supportShadow = "attachShadow" in document.createElement("div");
 
-export function attachShadow(host: Element, optinos: IShadowRootOptions) {
+export function attachShadow(host: HTMLElement, optinos: IShadowRootOptions) {
   if (!host || !supportShadow) return (host as any) as ShadowRoot;
   const { mode = "open", delegatesFocus } = { ...optinos };
   const shadowRoot = host.attachShadow({ mode, delegatesFocus });
-  (shadowRoot as any).style = {};
+  const define = Object.defineProperty;
+  define(shadowRoot, "style", { get: () => host.style });
+  define(shadowRoot, "parentNode", { get: () => host.parentNode });
+  define(shadowRoot, "parentElement", { get: () => host.parentElement });
+  define(shadowRoot, "offsetParent", { get: () => host.offsetParent });
+  define(shadowRoot, "offsetTop", { get: () => host.offsetTop });
+  define(shadowRoot, "offsetLeft", { get: () => host.offsetLeft });
+  define(shadowRoot, "offsetWidth", { get: () => host.offsetWidth });
+  define(shadowRoot, "offsetHeight", { get: () => host.offsetHeight });
+  define(shadowRoot, "getBoundingClientRect", {
+    get: () => host.getBoundingClientRect.bind(host)
+  });
+  define(shadowRoot, "getClientRects", {
+    get: () => host.getClientRects.bind(host)
+  });
   bridgeShadowRoot(shadowRoot);
   return shadowRoot;
 }

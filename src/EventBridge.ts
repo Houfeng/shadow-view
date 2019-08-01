@@ -5,6 +5,7 @@ export function bridge(fromNode: Node, toNode: Node) {
   const define = Object.defineProperty;
   BRIDGE_EVENT_NAMES.forEach(eventName => {
     fromNode.addEventListener(eventName, (fromEvent: any) => {
+      fromEvent.stopPropagation();
       const Event = fromEvent.constructor;
       const toEvent = new Event(eventName, fromEvent);
       define(toEvent, "path", { get: () => fromEvent.path });
