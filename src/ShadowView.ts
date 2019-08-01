@@ -26,8 +26,10 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    */
   private renderStyle() {
     const { style = "", imports = [] } = this.props.scoped || {};
-    const buffer = style ? [style] : [];
-    imports.forEach(url => buffer.unshift(`@import url("${url}")`));
+    const buffer = [
+      ...imports.map(url => `@import url("${url}")`),
+      ...(style ? [style] : [])
+    ];
     const tag = "style";
     const key = tag;
     const scoped = true;
