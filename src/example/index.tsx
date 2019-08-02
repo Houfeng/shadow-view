@@ -1,23 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ShadowView, attachShadow } from "../";
-import { Dialog } from "./Dialog";
 
 export class App extends React.Component {
-  state = { show: false };
+  state = { msg: "" };
 
   onClick = () => {
-    this.setState({ show: true });
+    this.setState({ msg: "Hello" });
   };
 
   render() {
-    const { show } = this.state;
+    const { msg } = this.state;
     return (
       <div>
         <ShadowView scoped={{ imports: [] }}>
+          <div>{msg}</div>
           <button onClick={this.onClick}>Click me</button>
         </ShadowView>
-        {show ? <Dialog>demo</Dialog> : null}
       </div>
     );
   }

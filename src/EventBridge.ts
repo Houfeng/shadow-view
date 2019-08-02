@@ -8,10 +8,16 @@ export function bridge(fromNode: Node, toNode: Node) {
       fromEvent.stopPropagation();
       const Event = fromEvent.constructor;
       const toEvent = new Event(eventName, fromEvent);
-      define(toEvent, "path", { get: () => fromEvent.path });
-      define(toEvent, "target", { get: () => fromEvent.path[0] });
-      define(toEvent, "srcElement", { get: () => fromEvent.path[0] });
-      define(toEvent, "toElement", { get: () => fromEvent.path[0] });
+      const {
+        path = [],
+        target = path[0],
+        srcElement = path[0],
+        toElement = path[0]
+      } = fromEvent;
+      define(toEvent, "path", { get: () => path });
+      define(toEvent, "target", { get: () => target });
+      define(toEvent, "srcElement", { get: () => srcElement });
+      define(toEvent, "toElement", { get: () => toElement });
       toNode.dispatchEvent(toEvent);
     });
   });
