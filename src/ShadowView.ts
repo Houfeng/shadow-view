@@ -1,6 +1,5 @@
 import * as React from "react";
 import { attachShadow, supportShadow } from "./ShadowRoot";
-import { IScoped } from "./IScoped";
 import { IShadowViewProps } from "./IShadowViewProps";
 
 /**
@@ -18,16 +17,19 @@ export class ShadowView extends React.Component<IShadowViewProps> {
   public root: HTMLElement;
 
   /**
+   * 原始的  visibility 属性值
+   */
+  private originVisibility: string;
+
+  /**
    * 渲染组件内容
    */
   public render() {
-    const { tagName = "shadow-view", children, scoped, ...others } = this.props;
-    const styleElement = this.renderScopedStyle(scoped);
-    const props = { ...others, ref: this.onRef };
-    return React.createElement(tagName, props, styleElement, children);
+    const { tagName = "shadow-view", children, className, style } = this.props;
+    const props = { className, style, ref: this.onRef };
+    const styleElement = this.renderStyle();
+    return React.createElement(tagName, props, children, styleElement);
   }
-
-  private originVisibility: string;
 
   /**
    * 在执行 ref 函数时
@@ -36,6 +38,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
     const { ref } = this.props;
     this.root = root;
     this.hideRoot();
+    this.attachShadow();
     if (typeof ref === "function") ref(root);
     else if (typeof ref === "string") (<any>this)[ref] = root;
   };
@@ -43,51 +46,35 @@ export class ShadowView extends React.Component<IShadowViewProps> {
   /**
    * 渲染局部作用域的样式
    */
-  private renderScopedStyle(scoped: IScoped) {
-    const { style = "", imports = [] } = { ...scoped };
+  private renderStyle() {
+    const { style = "", imports = [] } = { ...this.props.scoped };
     const buffer = [
       ...imports.map(url => `@import url("${url}")`),
       ...(style ? [style] : [])
     ];
     const tag = "style";
     const key = tag;
-    return React.createElement(tag, { key, scoped: true }, buffer.join(";"));
+    const scoped = true;
+    return React.createElement(tag, { key, scoped }, buffer.join(";"));
   }
 
   /**
    * 在组件挂载时
    */
   componentDidMount() {
-    this.attachShadow();
     const { showDelay = 16 } = this.props;
-    setTimeout(() => {
-      this.transportChildren();
-      this.checkRootVisibility();
-    }, showDelay);
-  }
-
-  /**
-   * 在组件更新时
-   */
-  componentDidUpdate() {
-    this.transportChildren();
+    setTimeout(this.checkRootVisibility, showDelay);
   }
 
   /**
    * 启用 Shadow DOM
    */
   private attachShadow = () => {
-    if (!this.root || !supportShadow) return;
+    if (!supportShadow || !this.root || !this.root.children) return;
+    const children = [].slice.call(this.root.children);
     const { mode = "open", delegatesFocus } = this.props;
     this.shadowRoot = attachShadow(this.root, { mode, delegatesFocus });
-  };
-
-  /**
-   * 传递子元素
-   */
-  private transportChildren = () => {
-    if (!this.root || !this.root.children) return;
-    [].slice.call(this.root.children).forEach((child: HTMLElement) => {
+    children.forEach((child: HTMLElement) => {
       this.shadowRoot.appendChild(child);
     });
   };

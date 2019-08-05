@@ -23,6 +23,12 @@ export function attachShadow(host: HTMLElement, optinos: IShadowRootOptions) {
   define(shadowRoot, "getClientRects", {
     get: () => host.getClientRects.bind(host)
   });
+  define(host, "insertBefore", {
+    get: () => shadowRoot.insertBefore.bind(shadowRoot)
+  });
+  define(host, "appendChild", {
+    get: () => shadowRoot.appendChild.bind(shadowRoot)
+  });
   bridgeShadowRoot(shadowRoot);
   return shadowRoot;
 }

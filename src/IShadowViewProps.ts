@@ -22,6 +22,16 @@ export interface IShadowViewProps extends IShadowRootOptions {
   ref?: Function;
 
   /**
+   * 顶层元素的 className
+   */
+  className?: string;
+
+  /**
+   * 顶层元素 style
+   */
+  style?: any;
+
+  /**
    * 针对容器作用域的一些设定
    */
   scoped?: IScoped;

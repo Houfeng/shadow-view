@@ -13,9 +13,8 @@ export class App extends React.Component {
     const { msg } = this.state;
     return (
       <div>
-        <div>{msg}</div>
         <ShadowView scoped={{ imports: [] }}>
-          <div>{msg}</div>
+          {msg ? <div>{msg}</div> : <span>No message</span>}
           <button onClick={this.onClick}>Click me</button>
         </ShadowView>
       </div>
