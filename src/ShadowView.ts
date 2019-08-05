@@ -93,6 +93,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * @param root 根元素
    */
   private hideRoot = () => {
+    if (!this.root || !this.root.style) return;
     this.originVisibility = this.root.style.visibility;
     this.root.style.visibility = "hidden";
   };
@@ -103,6 +104,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * @param visibility 对应的 css 的值
    */
   private showRoot = () => {
+    if (!this.root || !this.root.style) return;
     const { showDelay } = this.props;
     if (showDelay) {
       setTimeout(() => {
