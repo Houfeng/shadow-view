@@ -1,5 +1,6 @@
 import * as React from "react";
 import { attachShadow, supportShadow } from "./ShadowRoot";
+import { IScoped } from "./IScoped";
 import { IShadowViewProps } from "./IShadowViewProps";
 
 /**
@@ -12,85 +13,119 @@ export class ShadowView extends React.Component<IShadowViewProps> {
   public shadowRoot: ShadowRoot;
 
   /**
+   * DOM Root
+   */
+  public root: HTMLElement;
+
+  /**
    * 渲染组件内容
    */
   public render() {
-    const { tagName = "shadow-view", children } = this.props;
-    const styleElement = this.renderStyle();
-    const props = { ref: this.attachShadow };
+    const { tagName = "shadow-view", children, scoped, ...others } = this.props;
+    const styleElement = this.renderScopedStyle(scoped);
+    const props = { ...others, ref: this.onRef };
     return React.createElement(tagName, props, styleElement, children);
   }
+
+  private originVisibility: string;
+
+  /**
+   * 在执行 ref 函数时
+   */
+  private onRef = (root: HTMLElement) => {
+    const { ref } = this.props;
+    this.root = root;
+    this.hideRoot();
+    if (typeof ref === "function") ref(root);
+    else if (typeof ref === "string") (<any>this)[ref] = root;
+  };
 
   /**
    * 渲染局部作用域的样式
    */
-  private renderStyle() {
-    const { style = "", imports = [] } = this.props.scoped || {};
+  private renderScopedStyle(scoped: IScoped) {
+    const { style = "", imports = [] } = { ...scoped };
     const buffer = [
       ...imports.map(url => `@import url("${url}")`),
       ...(style ? [style] : [])
     ];
     const tag = "style";
     const key = tag;
-    const scoped = true;
-    return React.createElement(tag, { key, scoped }, buffer.join(";"));
+    return React.createElement(tag, { key, scoped: true }, buffer.join(";"));
+  }
+
+  /**
+   * 在组件挂载时
+   */
+  componentDidMount() {
+    this.attachShadow();
+    this.transportChildren();
+    this.checkRootVisibility();
+  }
+
+  /**
+   * 在组件更新时
+   */
+  componentDidUpdate() {
+    this.transportChildren();
   }
 
   /**
    * 启用 Shadow DOM
    */
-  private attachShadow = (root: HTMLElement) => {
-    if (!root || !supportShadow) return;
-    const originVisibility = this.hideRoot(root);
+  private attachShadow = () => {
+    if (!this.root || !supportShadow) return;
     const { mode = "open", delegatesFocus } = this.props;
-    this.shadowRoot = attachShadow(root, { mode, delegatesFocus });
-    [].slice.call(root.children).forEach((child: HTMLElement) => {
+    this.shadowRoot = attachShadow(this.root, { mode, delegatesFocus });
+  };
+
+  /**
+   * 传递子元素
+   */
+  private transportChildren = () => {
+    [].slice.call(this.root.children).forEach((child: HTMLElement) => {
       this.shadowRoot.appendChild(child);
     });
-    this.checkStyleState(root, originVisibility);
   };
 
   /**
    * 隐藏根元素
    * @param root 根元素
    */
-  private hideRoot(root: HTMLElement): string {
-    const originVisibility = root.style.visibility;
-    root.style.visibility = "hidden";
-    return originVisibility;
-  }
+  private hideRoot = () => {
+    this.originVisibility = this.root.style.visibility;
+    this.root.style.visibility = "hidden";
+  };
 
   /**
    * 显示根元素
    * @param root 根元素
    * @param visibility 对应的 css 的值
    */
-  private showRoot(root: HTMLElement, visibility: string): void {
+  private showRoot = () => {
     const { showDelay } = this.props;
     if (showDelay) {
       setTimeout(() => {
-        root.style.visibility = visibility;
+        this.root.style.visibility = this.originVisibility;
       }, showDelay);
     } else {
-      root.style.visibility = visibility;
+      this.root.style.visibility = this.originVisibility;
     }
-  }
+  };
 
   /**
    * 检查样式加载状态
    * @param root 根元素
    * @param visibility 对应的 css 的值
    */
-  private checkStyleState(root: HTMLElement, visibility: string): any {
-    const style = root.shadowRoot.styleSheets[0] as any;
-    if (!style) return this.showRoot(root, visibility);
+  private checkRootVisibility = () => {
+    const style = this.shadowRoot.styleSheets[0] as any;
+    if (!style) return this.showRoot();
     const rules = [].slice.call(style.rules || style.cssRules || []);
-    if (rules.length < 1) return this.showRoot(root, visibility);
+    if (rules.length < 1) return this.showRoot();
     const pending = rules.some((rule: any) => {
       return !(rule.styleSheet || rule.href === "") && !rule.style;
     });
-    return pending
-      ? setTimeout(() => this.checkStyleState(root, visibility), 16)
-      : this.showRoot(root, visibility);
-  }
+    return pending ? setTimeout(this.checkRootVisibility, 16) : this.showRoot();
+  };
 }

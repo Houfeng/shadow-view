@@ -17,6 +17,11 @@ export interface IShadowViewProps extends IShadowRootOptions {
   children?: React.ReactNode;
 
   /**
+   * React Ref function
+   */
+  ref?: Function;
+
+  /**
    * 针对容器作用域的一些设定
    */
   scoped?: IScoped;
