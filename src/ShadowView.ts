@@ -59,8 +59,11 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    */
   componentDidMount() {
     this.attachShadow();
-    this.transportChildren();
-    this.checkRootVisibility();
+    const { showDelay = 16 } = this.props;
+    setTimeout(() => {
+      this.transportChildren();
+      this.checkRootVisibility();
+    }, showDelay);
   }
 
   /**
@@ -105,14 +108,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    */
   private showRoot = () => {
     if (!this.root || !this.root.style) return;
-    const { showDelay } = this.props;
-    if (showDelay) {
-      setTimeout(() => {
-        this.root.style.visibility = this.originVisibility;
-      }, showDelay);
-    } else {
-      this.root.style.visibility = this.originVisibility;
-    }
+    this.root.style.visibility = this.originVisibility;
   };
 
   /**
