@@ -86,6 +86,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * 传递子元素
    */
   private transportChildren = () => {
+    if (!this.root || !this.root.children) return;
     [].slice.call(this.root.children).forEach((child: HTMLElement) => {
       this.shadowRoot.appendChild(child);
     });
