@@ -17,12 +17,19 @@ export function bridge(fromNode: Node, toNode: Node) {
         path = [],
         target = path[0],
         srcElement = path[0],
-        toElement = path[0]
+        toElement = path[0],
+        preventDefault
       } = fromEvent;
       define(toEvent, "path", { get: () => path });
       define(toEvent, "target", { get: () => target });
       define(toEvent, "srcElement", { get: () => srcElement });
       define(toEvent, "toElement", { get: () => toElement });
+      define(toEvent, "preventDefault", {
+        value: () => {
+          preventDefault.call(fromEvent);
+          return preventDefault.call(toEvent);
+        }
+      });
       toNode.dispatchEvent(toEvent);
     });
   });

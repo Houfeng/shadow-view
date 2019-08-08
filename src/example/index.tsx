@@ -13,9 +13,11 @@ export class App extends React.Component {
     const { msg } = this.state;
     return (
       <div>
+        <a href="/outside">Link outside</a>
         <ShadowView scoped={{ imports: [] }}>
           {msg ? <div>{msg}</div> : <span>No message</span>}
           <button onClick={this.onClick}>Click me</button>
+          <a href="/inside">Link inside</a>
         </ShadowView>
       </div>
     );

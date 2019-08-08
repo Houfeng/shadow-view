@@ -11,6 +11,13 @@
       margin: 36px;
     }
   </style>
+  <script>
+    document.addEventListener('click', event => {
+      if (event.target.tagName !== 'A') return;
+      event.preventDefault();
+      console.log(event);
+    });
+  </script>
 </head>
 
 <body>
