@@ -7,7 +7,12 @@ export function bridge(fromNode: Node, toNode: Node) {
     fromNode.addEventListener(eventName, (fromEvent: any) => {
       fromEvent.stopPropagation();
       const Event = fromEvent.constructor;
-      const toEvent = new Event(eventName, fromEvent);
+      const toEvent = new Event(eventName, {
+        ...fromEvent,
+        bubbles: true,
+        cancelable: true,
+        composed: true
+      });
       const {
         path = [],
         target = path[0],
