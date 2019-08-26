@@ -40,4 +40,9 @@ export interface IShadowViewProps extends IShadowRootOptions {
    * 显示延时
    */
   showDelay?: number;
+
+  /**
+   * 显示动画持续时间
+   */
+  transitionDuration?: string;
 }
