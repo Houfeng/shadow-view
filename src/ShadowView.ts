@@ -85,7 +85,6 @@ export class ShadowView extends React.Component<IShadowViewProps> {
   private hideRoot = () => {
     if (!this.root || !this.root.style) return;
     this.originVisibility = this.root.style.opacity;
-    this.root.style.transitionDuration = ".2s";
     this.root.style.opacity = "0";
   };
 
@@ -94,6 +93,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    */
   private showRoot = () => {
     if (!this.root || !this.root.style) return;
+    this.root.style.transitionDuration = ".2s";
     this.root.style.opacity = this.originVisibility;
   };
 
