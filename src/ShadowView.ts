@@ -81,28 +81,24 @@ export class ShadowView extends React.Component<IShadowViewProps> {
 
   /**
    * 隐藏根元素
-   * @param root 根元素
    */
   private hideRoot = () => {
     if (!this.root || !this.root.style) return;
-    this.originVisibility = this.root.style.visibility;
-    this.root.style.visibility = "hidden";
+    this.originVisibility = this.root.style.filter;
+    this.root.style.transitionDuration = ".2s";
+    this.root.style.filter = "blur(8px)";
   };
 
   /**
    * 显示根元素
-   * @param root 根元素
-   * @param visibility 对应的 css 的值
    */
   private showRoot = () => {
     if (!this.root || !this.root.style) return;
-    this.root.style.visibility = this.originVisibility;
+    this.root.style.filter = this.originVisibility;
   };
 
   /**
    * 检查样式加载状态
-   * @param root 根元素
-   * @param visibility 对应的 css 的值
    */
   private checkRootVisibility = () => {
     const style = this.shadowRoot.styleSheets[0] as any;
