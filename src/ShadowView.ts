@@ -102,7 +102,9 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * 检查样式加载状态
    */
   private checkRootVisibility = () => {
-    if (!this.shadowRoot.styleSheets) return this.showRoot();
+    if (!this.shadowRoot || !this.shadowRoot.styleSheets) {
+      return this.showRoot();
+    }
     const style = this.shadowRoot.styleSheets[0] as any;
     if (!style) return this.showRoot();
     const rules = [].slice.call(style.rules || style.cssRules || []);
