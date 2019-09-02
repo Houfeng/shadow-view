@@ -20,9 +20,14 @@ Node.prototype.contains = function(otherNode) {
   const root = getRootNode(this);
   const otherRoot = getRootNode(otherNode);
   if (!root || !otherRoot) return false;
-  return root === otherRoot
-    ? contains.call(this, otherNode)
-    : contains.call(this, otherRoot.host || otherNode);
+  try {
+    return root === otherRoot
+      ? contains.call(this, otherNode)
+      : contains.call(this, otherRoot.host || otherNode);
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 };
 
 const { compareDocumentPosition } = Node.prototype;
@@ -31,7 +36,12 @@ Node.prototype.compareDocumentPosition = function(otherNode) {
   const root = getRootNode(this);
   const otherRoot = getRootNode(otherNode);
   if (!root || !otherRoot) return false;
-  return root === otherRoot
-    ? compareDocumentPosition.call(this, otherNode)
-    : compareDocumentPosition.call(this, otherRoot.host || otherNode);
+  try {
+    return root === otherRoot
+      ? compareDocumentPosition.call(this, otherNode)
+      : compareDocumentPosition.call(this, otherRoot.host || otherNode);
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 };
