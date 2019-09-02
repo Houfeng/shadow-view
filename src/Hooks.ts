@@ -45,3 +45,20 @@ Node.prototype.compareDocumentPosition = function(otherNode) {
     return false;
   }
 };
+
+const parentElementDescriptor = Object.getOwnPropertyDescriptor(
+  Node.prototype,
+  "parentElement"
+);
+Object.defineProperty(Node.prototype, "parentElement", {
+  configurable: true,
+  enumerable: true,
+  get() {
+    const parentElement = parentElementDescriptor.get.call(this);
+    if (parentElement) return parentElement;
+    const parentNode = this.parentNode;
+    if (!parentNode) return null;
+    if (parentNode.constructor !== (window as any).ShadowRoot) return null;
+    return parentNode.parentElement || parentNode;
+  }
+});
