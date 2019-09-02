@@ -32,7 +32,7 @@ Node.prototype.contains = function(otherNode) {
 
 const { compareDocumentPosition } = Node.prototype;
 Node.prototype.compareDocumentPosition = function(otherNode) {
-  if (!otherNode || compareDocumentPosition) return false;
+  if (!otherNode || !compareDocumentPosition) return false;
   const root = getRootNode(this);
   const otherRoot = getRootNode(otherNode);
   if (!root || !otherRoot) return false;
