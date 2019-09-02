@@ -6,6 +6,7 @@ export function getRootNode(node: Node) {
 
 const { removeChild } = Node.prototype;
 Node.prototype.removeChild = function(child) {
+  if (!removeChild) return;
   try {
     return removeChild.call(this, child);
   } catch (err) {
@@ -15,7 +16,7 @@ Node.prototype.removeChild = function(child) {
 
 const { contains } = Node.prototype;
 Node.prototype.contains = function(otherNode) {
-  if (!otherNode) return false;
+  if (!otherNode || !contains) return false;
   const root = getRootNode(this);
   const otherRoot = getRootNode(otherNode);
   if (!root || !otherRoot) return false;
@@ -26,7 +27,7 @@ Node.prototype.contains = function(otherNode) {
 
 const { compareDocumentPosition } = Node.prototype;
 Node.prototype.compareDocumentPosition = function(otherNode) {
-  if (!otherNode) return false;
+  if (!otherNode || compareDocumentPosition) return false;
   const root = getRootNode(this);
   const otherRoot = getRootNode(otherNode);
   if (!root || !otherRoot) return false;
