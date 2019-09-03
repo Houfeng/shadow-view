@@ -14,7 +14,7 @@ export class App extends React.Component {
     return (
       <div>
         <a href="/outside">Link outside</a>
-        <ShadowView scoped={{ imports: [] }}>
+        <ShadowView>
           {msg ? <div>{msg}</div> : <span>No message</span>}
           <button onClick={this.onClick}>Click me</button>
           <a href="/inside">Link inside</a>

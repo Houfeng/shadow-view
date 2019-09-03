@@ -47,15 +47,16 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * 渲染局部作用域的样式
    */
   private renderStyle() {
-    const { style = "", imports = [] } = { ...this.props.scoped };
-    const buffer = [
-      ...imports.map(url => `@import url("${url}")`),
-      ...(style ? [style] : [])
+    const { styleContent, styleSheets = [] } = this.props;
+    const styleBuffer = [
+      ...styleSheets.map(url => `@import url("${url}")`),
+      ...(styleContent ? [styleContent] : [])
     ];
-    const tag = "style";
-    const key = tag;
-    const scoped = true;
-    return React.createElement(tag, { key, scoped }, buffer.join(";"));
+    return React.createElement(
+      "style",
+      { key: "style" },
+      styleBuffer.join(";")
+    );
   }
 
   /**
@@ -70,6 +71,7 @@ export class ShadowView extends React.Component<IShadowViewProps> {
    * 启用 Shadow DOM
    */
   private attachShadow = () => {
+    if (this.props.scoped === false) return;
     if (!supportShadow || !this.root || !this.root.children) return;
     const children = [].slice.call(this.root.children);
     const { mode = "open", delegatesFocus } = this.props;

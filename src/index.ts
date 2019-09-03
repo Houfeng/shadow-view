@@ -4,7 +4,6 @@ export * from "./ShadowView";
 export * from "./EventBridge";
 export * from "./EventNames";
 export * from "./ShadowRoot";
-export * from "./IScoped";
 export * from "./IShadowRootOptions";
 export * from "./IShadowViewProps";
 

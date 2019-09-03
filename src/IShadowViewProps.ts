@@ -1,4 +1,3 @@
-import { IScoped } from "./IScoped";
 import { IShadowRootOptions } from "./IShadowRootOptions";
 
 /**
@@ -32,14 +31,24 @@ export interface IShadowViewProps extends IShadowRootOptions {
   style?: any;
 
   /**
-   * 针对容器作用域的一些设定
+   * 引入的样式表单
    */
-  scoped?: IScoped;
+  styleSheets?: string[];
+
+  /**
+   * 引入的样式文本
+   */
+  styleContent?: string;
 
   /**
    * 显示延时
    */
   showDelay?: number;
+
+  /**
+   * 是否启用隔离，默认为 true
+   */
+  scoped?: boolean;
 
   /**
    * 显示动画持续时间
