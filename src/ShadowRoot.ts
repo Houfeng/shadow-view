@@ -17,6 +17,9 @@ export function attachShadow(host: HTMLElement, optinos: IShadowRootOptions) {
   define(shadowRoot, "offsetLeft", { get: () => host.offsetLeft });
   define(shadowRoot, "offsetWidth", { get: () => host.offsetWidth });
   define(shadowRoot, "offsetHeight", { get: () => host.offsetHeight });
+  define(shadowRoot, "getAttribute", {
+    get: () => host.getAttribute.bind(host)
+  });
   define(shadowRoot, "getBoundingClientRect", {
     get: () => host.getBoundingClientRect.bind(host)
   });
